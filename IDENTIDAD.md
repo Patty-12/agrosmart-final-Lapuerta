@@ -4,11 +4,11 @@
 > sincrónica** del examen. Toma menos de 5 minutos y es lo único con horario fijo:
 > después trabajas a tu ritmo hasta el plazo del día siguiente.
 
-- **Nombre completo:**
-- **Cédula:**
-- **NRC:**
-- **Nonce del examen:**            <!-- código publicado por el docente en la sesión -->
-- **Fecha y hora de inicio:**      <!-- formato: 2026-XX-XX HH:MM -->
+- **Nombre completo:** MARTHA PATRICIA LAPUERTA QUINATOA
+- **Cédula:** 1725659492
+- **NRC:** 30405
+- **Nonce del examen:** AGS-2026           <!-- código publicado por el docente en la sesión -->
+- **Fecha y hora de inicio:**  2026-30-07  19:47    <!-- formato: 2026-XX-XX HH:MM -->
 
 ---
 
@@ -19,9 +19,9 @@ se busca en una tabla.
 
 | # | Parámetro | Cómo se obtiene | Mi valor |
 |:---:|-----------|-----------------|----------|
-| — | `NN` | los 2 últimos dígitos de mi cédula | |
-| 1 | Nombre de la tabla | `tbl_productos_base_` + `NN` | |
-| 2 | Puerto | `81` + `NN` | |
+| — | `92` | los 2 últimos dígitos de mi cédula | |
+| 1 | Nombre de la tabla | `tbl_café_base_` + `92` | |
+| 2 | Puerto | `81` + `92` | |
 | 3 | Categoría | según el **último dígito** (tabla de abajo) | |
 | — | Audiencia para el prompt de IA | según la categoría | |
 

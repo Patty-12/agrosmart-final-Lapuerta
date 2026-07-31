@@ -4,7 +4,7 @@
 > sincrónica** del examen. Toma menos de 5 minutos y es lo único con horario fijo:
 > después trabajas a tu ritmo hasta el plazo del día siguiente.
 
-- **Nombre completo:** MARTHA PATRICIA LAPUERTA QUINATOA
+- **Nombre completo:** MARTHA PATRICIA LAPUERTA QUINATOA.
 - **Cédula:** 1725659492
 - **NRC:** 30405
 - **Nonce del examen:** AGS-2026           <!-- código publicado por el docente en la sesión -->

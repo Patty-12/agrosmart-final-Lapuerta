@@ -19,10 +19,10 @@ se busca en una tabla.
 
 | # | Parámetro | Cómo se obtiene | Mi valor |
 |:---:|-----------|-----------------|----------|
-| — | `92` | los 2 últimos dígitos de mi cédula | |
-| 1 | Nombre de la tabla | `tbl_café_base_` + `92` | |
-| 2 | Puerto | `81` + `92` | |
-| 3 | Categoría | según el **último dígito** (tabla de abajo) | |
+| — | `NN` | los 2 últimos dígitos de mi cédula |92 |
+| 1 | Nombre de la tabla | `tbl_café_base_` + `92` | tbl_cafe_base_92|
+| 2 | Puerto | `81` + `92` |8192 |
+| 3 | Categoría | según el **último dígito** (tabla de abajo) | 2 - Café|
 | — | Audiencia para el prompt de IA | según la categoría | |
 
 **Tabla de categorías:**

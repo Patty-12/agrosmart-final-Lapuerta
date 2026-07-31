@@ -17,10 +17,10 @@
 
 ## Datos
 
-- **Nombre:**
-- **Cédula:**
-- **NN (dos últimos dígitos):**
-- **Categoría asignada (según el último dígito):**
+- **Nombre:** Patricia Lapuerta
+- **Cédula:** 1725659492
+- **NN (dos últimos dígitos):** 92
+- **Categoría asignada (según el último dígito):** Café
 
 ---
 
@@ -28,23 +28,23 @@
 
 **1.1** ¿Qué archivo activa el perfil `prod` y qué línea exacta lo hace?
 
->
+> El perfil prod se activa en el archivo application.properties con la línea spring.profiles.active=prod
 
 **1.2** Pega la línea del log de arranque donde se ve tu puerto y el perfil activo.
 
-```
+2026-07-30T21:29:09.156-05:00  INFO 18956 --- [agrosmart] [           main] e.e.espe.agrosmart.AgrosmartApplication  : The following 1 profile is active: "prod"
 
-```
+2026-07-30T21:29:12.087-05:00  INFO 18956 --- [agrosmart] [           main] o.s.boot.reactor.netty.NettyWebServer    : Netty started on port 8192 (http)
 
 **1.3** ¿Qué habría pasado si dejabas `ddl-auto=create-drop` en lugar de `update`?
 Responde pensando en tus datos sembrados.
 
->
+>La tabla se borraría cuando se apaga la aplicación y se volvería a crear al iniciar. Por eso perdería los productos que estaban guardados en la base de datos.
 
 **1.4** ¿Levantaste PostgreSQL con `compose.yaml` (Opción A) o con una instalación local
 (Opción B)? ¿Qué ventaja tiene la que elegiste?
 
->
+>Usé PostgreSQL instalado localmente. La ventaja es que ya lo tenía instalado y pude usar directamente mi base agrosmart_db sin depender de Docker.
 
 ---
 
@@ -52,7 +52,7 @@ Responde pensando en tus datos sembrados.
 
 **2.1** ¿Cuál es el nombre exacto de tu tabla y de dónde salió ese nombre?
 
->
+>Mi tabla se llama tbl_productos_base_92. El número 92 salió de los dos últimos dígitos de mi cédula.
 
 **2.2** Pega la salida de `psql -d agrosmart_db -c "\d tbl_productos_base_NN"` y
 señala dónde se ve la restricción `unique` y el `length` de 120.
@@ -64,12 +64,12 @@ señala dónde se ve la restricción `unique` y el `length` de 120.
 **2.3** ¿Por qué usaste `BigDecimal` y no `double` para `precio_usd`? Relaciónalo con el
 tipo que generó Hibernate en PostgreSQL.
 
->
+>Usé BigDecimal porque el precio es un valor monetario y necesito guardar los decimales con precisión. Hibernate creó la columna como numeric(10,2) en PostgreSQL.
 
 **2.4** ¿Cómo hiciste idempotente tu siembra y qué pasaría en el segundo arranque si no
 lo fuera? (piensa en la restricción `unique` de `nombre_producto`)
 
->
+>Hice la siembra idempotente usando productoRepository.count() == 0. Así los cinco productos solo se guardan cuando la tabla está vacía. Sin esa condición, en el segundo arranque intentaría guardar los mismos nombres y fallaría por la restricción unique.
 
 ---
 

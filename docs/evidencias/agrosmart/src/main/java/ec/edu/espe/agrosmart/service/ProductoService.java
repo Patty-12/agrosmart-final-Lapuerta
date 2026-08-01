@@ -11,12 +11,14 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.Collections;
 
 @Service
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final AgroSmartAIService agroSmartAIService;
 
     private static final Producto PRODUCTO_GENERICO = new Producto(
             0L,
@@ -26,45 +28,47 @@ public class ProductoService {
             Collections.emptyList()
     );
 
-    public ProductoService(ProductoRepository productoRepository) {
+    public ProductoService(
+            ProductoRepository productoRepository,
+            AgroSmartAIService agroSmartAIService
+    ) {
         this.productoRepository = productoRepository;
+        this.agroSmartAIService = agroSmartAIService;
     }
 
     public Flux<Producto> obtenerProductosComercializables() {
 
-        // fromCallable evita ejecutar findAll inmediatamente.
-        // La consulta se ejecuta cuando alguien se suscribe al flujo.
+        // fromCallable difiere la consulta hasta que alguien se suscriba.
         return Mono.fromCallable(productoRepository::findAll)
 
-                // JPA es bloqueante, por eso la consulta se ejecuta
-                // fuera del event loop de Netty.
+                // JPA bloquea, por eso se ejecuta fuera del event loop de Netty.
                 .subscribeOn(Schedulers.boundedElastic())
 
-                // Convierte el Mono<List<ProductoEntity>> en un Flux de entidades.
+                // Convierte la lista obtenida desde JPA en un flujo de entidades.
                 .flatMapMany(Flux::fromIterable)
 
-                // Convierte cada entidad de Hibernate al modelo inmutable.
+                // Convierte cada entidad al modelo inmutable de dominio.
                 .map(ProductoMapper::toDominio)
 
-                // Crea un producto nuevo con el nombre en mayúsculas.
+                // Crea una nueva instancia con el nombre en mayúsculas.
                 .map(ProductoFilters.A_MAYUSCULAS)
 
                 // Descarta productos con precio cero o sin correos.
                 .filter(ProductoFilters.IS_VALID)
 
-                // Registra el id y nombre sin modificar el producto.
+                // Registra cada producto sin modificarlo.
                 .doOnNext(ProductoFilters.LOG_PRODUCTO)
 
-                // Si no quedó ningún producto válido, devuelve uno genérico.
+                // Emite un producto genérico si no queda ninguno válido.
                 .defaultIfEmpty(PRODUCTO_GENERICO);
     }
 
     public Mono<Producto> buscarPorId(Long id) {
 
-        // findById también es una operación bloqueante de JPA.
+        // findById es una consulta bloqueante de JPA.
         return Mono.fromCallable(() -> productoRepository.findById(id))
 
-                // Mueve la consulta bloqueante al pool boundedElastic.
+                // Ejecuta la consulta en boundedElastic y no en Netty.
                 .subscribeOn(Schedulers.boundedElastic())
 
                 // Convierte Optional vacío en Mono vacío.
@@ -73,9 +77,36 @@ public class ProductoService {
                 // Convierte la entidad encontrada al modelo de dominio.
                 .map(ProductoMapper::toDominio)
 
-                // Si el Mono está vacío, cambia a un Mono que emite un error.
+                // Si no existe, cambia el flujo vacío por un error.
                 .switchIfEmpty(
                         Mono.error(new ProductoNoEncontradoException(id))
                 );
+    }
+
+    public Mono<String> generarPublicidad(
+            String producto,
+            String audiencia
+    ) {
+
+        // La llamada HTTP al modelo de IA es bloqueante.
+        return Mono.fromCallable(
+                        () -> agroSmartAIService.generarPublicidad(
+                                producto,
+                                audiencia
+                        )
+                )
+
+                // La llamada se ejecuta fuera del event loop de Netty.
+                .subscribeOn(Schedulers.boundedElastic())
+
+                // Evita que la aplicación espere más de 30 segundos.
+                .timeout(Duration.ofSeconds(30))
+
+                // Si la IA falla, devuelve un texto de respaldo.
+                .onErrorResume(error -> Mono.just(
+                        "Publicidad no disponible en este momento ("
+                                + error.getClass().getSimpleName()
+                                + ")"
+                ));
     }
 }

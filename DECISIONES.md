@@ -302,20 +302,32 @@ de copia defensiva?
 **8.1** Pega tu `git log --oneline --graph --all`.
 
 ```
+C:\Users\Tenshi\Desktop\avanzada\agrosmart-final-Lapuerta>git log --oneline --graph --all
+* 7bb6cef (HEAD -> feature/documentacion, origin/feature/pruebas, feature/pruebas) test: agrega pruebas del modelo, logica funcional, flujo reactivo e ia
+* dafd81b (origin/feature/api-reactiva, feature/api-reactiva) feat: expone endpoints reactivos y de publicidad
+* 34c55da (origin/feature/ia-langchain4j, feature/ia-langchain4j) feat: integra langchain4j para publicidad de productos
+* ed02e12 (origin/feature/servicio-reactivo, feature/servicio-reactivo) feat: implementa servicio reactivo con boundedElastic y operadores
+* afa2722 (origin/feature/modelo-inmutable, feature/modelo-inmutable) feat: agrega modelo inmutable de producto y logica funcional
+* 285f02e (origin/feature/persistencia-jpa, feature/persistencia-jpa) feat: agrega entidad jpa de productos y siembra de datos
+* 316e944 (origin/feature/config-perfiles, feature/config-perfiles) chore: configura perfil prod con postgresql y puerto propio
+* 6501c80 (origin/main, origin/HEAD, main) chore: inicializa proyecto agrosmart y registra identidad del examen
+* 71a7b9c Update IDENTIDAD.md
+* 75ea625 Update IDENTIDAD.md
+* f8537f1 Initial commit
 
 ```
 
 **8.2** ¿Qué fase te tomó más tiempo del previsto y por qué?
 
->
+>La fase que más tiempo me tomó fue la del servicio reactivo porque tuve que entender cómo conectar JPA con WebFlux sin bloquear el hilo de Netty. También tuve un problema porque Windows tenía reservado el rango donde estaba incluido mi puerto 8192.
 
 **8.3** Si tuvieras 30 minutos más, ¿qué mejorarías **primero** de tu entrega y por qué
 esa y no otra?
 
->
+>Mejoraría primero el manejo de errores y agregaría un @RestControllerAdvice, porque así todas las  espuestas de error tendrían una estructura más clara y centralizada.
 
 **8.4** Declara honestamente qué herramientas consultaste durante el examen
 (documentación, apuntes, asistentes de IA) y para qué. **Esta declaración no descuenta
 puntaje**; su omisión o falsedad sí constituye falta de honestidad académica.
 
->
+>Consulté el enunciado del examen, mis apuntes, la documentación de Spring y un asistente de IA para recibir orientación, revisar errores de configuración y comprender la estructura del proyecto. Probé cada parte en mi computadora y revisé los resultados de la terminal.

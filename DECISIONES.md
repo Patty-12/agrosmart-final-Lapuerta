@@ -249,28 +249,51 @@ C:\Users\Tenshi>curl.exe "http://localhost:8192/api/agrosmart/publicidad?product
 **7.1** Pega la salida real de tus pruebas (`./mvnw test` o `./gradlew test`).
 
 ```
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.625 s -- in ec.edu.espe.agrosmart.AgrosmartApplicationTests
+[INFO] Running ec.edu.espe.agrosmart.domain.ProductoFiltersTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.010 s -- in ec.edu.espe.agrosmart.domain.ProductoFiltersTest
+[INFO] Running ec.edu.espe.agrosmart.domain.ProductoTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s -- in ec.edu.espe.agrosmart.domain.ProductoTest
+[INFO] Running ec.edu.espe.agrosmart.service.ProductoServiceTest
+Producto procesado: id=null, nombre=CAFÉ ARÁBIGO DE ALTURA
+Producto procesado: id=null, nombre=CAFÉ TOSTADO ARTESANAL
+Producto procesado: id=null, nombre=CAFÉ ESPECIAL DE ORIGEN
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.331 s -- in ec.edu.espe.agrosmart.service.ProductoServiceTest
+[INFO] Running ec.edu.espe.agrosmart.service.PublicidadServiceTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.058 s -- in ec.edu.espe.agrosmart.service.PublicidadServiceTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0
+[INFO] 
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  9.297 s
+[INFO] Finished at: 2026-07-31T19:55:56-05:00
 
 ```
 
 **7.2** ¿Cuántos productos espera tu `expectNextCount(...)` y por qué ese número
 concreto? Relaciónalo con tu semilla.
 
->
+>Mi prueba usa expectNextCount(3) porque sembré cinco productos de la categoría Café. Tres tienen precio mayor que cero y correos, mientras que los otros dos son inválidos.
 
 **7.3** ¿Por qué mockeaste `ProductoRepository` en lugar de dejar que la prueba consulte
 PostgreSQL?
 
->
+>Mockeé ProductoRepository para que las pruebas no dependan de que PostgreSQL esté encendido. Así puedo controlar los datos y probar solo el comportamiento de ProductoService.
 
 **7.4** ¿Qué demuestra `assertNotSame` que `assertEquals` **no** demuestra en tu prueba
 de copia defensiva?
 
->
+>assertNotSame comprueba que las listas no son el mismo objeto en memoria.
+>assertEquals solo comprueba que tienen el mismo contenido.
 
 **7.5** ¿Por qué una prueba de un `Flux` que no llama a `verifyComplete()` (o a
 `verify()`) no está probando nada?
 
->
+>Un Flux no se ejecuta hasta que alguien se suscribe. verifyComplete() o verify() hacen la suscripción y esperan el resultado. Sin eso la prueba solo construiría el flujo, pero no lo ejecutaría.
 
 ---
 

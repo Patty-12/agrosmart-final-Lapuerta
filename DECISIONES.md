@@ -78,24 +78,47 @@ lo fuera? (piensa en la restricción `unique` de `nombre_producto`)
 **3.1** ¿Por qué tienes **dos** clases (`ProductoEntity` y `Producto`) en lugar de una?
 ¿Qué te impide hacer inmutable directamente la entidad de Hibernate?
 
->
+> Tengo `ProductoEntity` para trabajar con Hibernate y la tabla
+> `tbl_productos_base_92`. Esa clase tiene constructor vacío y setters porque Hibernate
+> los necesita. La clase `Producto` es mi modelo de dominio y la hice inmutable para que
+> sus datos no puedan cambiar después de crear el objeto.
+
 
 **3.2** Escribe el código exacto de **tus dos** copias defensivas e indica en qué línea
 está cada una.
 
 ```java
+// Copia defensiva de entrada, dentro del constructor.
+this.correosNotificacion = new ArrayList<>(
+        correosNotificacion == null
+                ? Collections.emptyList()
+                : correosNotificacion
+);
 
-```
+// Copia defensiva de salida, dentro del getter.
+return Collections.unmodifiableList(
+        new ArrayList<>(correosNotificacion)
+);
 
 **3.3** ¿Por qué la copia defensiva **solo en el getter** no sería suficiente? Describe
 el ataque concreto que quedaría abierto sobre **tu** clase.
 
->
+> No sería suficiente porque alguien podría guardar la lista original, crear el Producto y después agregar otro correo a esa misma lista. Sin la copia del constructor también se modificaría la lista interna del producto.
 
 **3.4** ¿Cómo implementaste `A_MAYUSCULAS` para no mutar el `Producto` recibido?
 
 ```java
-
+public static final Function<Producto, Producto> A_MAYUSCULAS =
+        producto -> new Producto(
+                producto.getId(),
+                producto.getNombre() == null
+                        ? null
+                        : producto.getNombre().toUpperCase(Locale.ROOT),
+                producto.getCategoria(),
+                producto.getPrecioUsd(),
+                producto.getCorreosNotificacion()
+        );
+        
 ```
 
 ---

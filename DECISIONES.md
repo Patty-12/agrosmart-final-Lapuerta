@@ -118,7 +118,7 @@ public static final Function<Producto, Producto> A_MAYUSCULAS =
                 producto.getPrecioUsd(),
                 producto.getCorreosNotificacion()
         );
-        
+
 ```
 
 ---
@@ -128,6 +128,17 @@ public static final Function<Producto, Producto> A_MAYUSCULAS =
 **4.1** Pega tu método `obtenerProductosComercializables()` completo.
 
 ```java
+public Flux<Producto> obtenerProductosComercializables() {
+
+    return Mono.fromCallable(productoRepository::findAll)
+            .subscribeOn(Schedulers.boundedElastic())
+            .flatMapMany(Flux::fromIterable)
+            .map(ProductoMapper::toDominio)
+            .map(ProductoFilters.A_MAYUSCULAS)
+            .filter(ProductoFilters.IS_VALID)
+            .doOnNext(ProductoFilters.LOG_PRODUCTO)
+            .defaultIfEmpty(PRODUCTO_GENERICO);
+}
 
 ```
 
@@ -135,22 +146,24 @@ public static final Function<Producto, Producto> A_MAYUSCULAS =
 `.subscribeOn(Schedulers.boundedElastic())` de ese método? Si lo probaste, indica qué
 hilo aparecía en el log antes y después.
 
->
+>Si lo elimino, productoRepository.findAll() podría ejecutarse en el hilo de Netty. Como JPA y JDBC son bloqueantes, ese hilo tendría que esperar la respuesta de PostgreSQL y podría afectar las demás peticiones.
 
 **4.3** ¿Por qué `Mono.fromCallable(...)` y no `Mono.just(repository.findAll())`?
 (pista: cuándo se ejecuta cada uno)
 
->
+>Usé Mono.fromCallable porque la consulta se ejecuta cuando alguien se suscribe.
+>Con Mono.just(productoRepository.findAll()), la consulta se ejecutaría
+>inmediatamente antes de construir el flujo.
 
 **4.4** En **tu** código, ¿dónde usaste `defaultIfEmpty` y dónde `switchIfEmpty`, y por
 qué no son intercambiables en esos dos lugares?
 
->
+>Usé defaultIfEmpty en obtenerProductosComercializables() para devolver PRODUCTO_GENERICO cuando todos los productos fueron descartados. Usé switchIfEmpty en buscarPorId() para emitir ProductoNoEncontradoException cuando no existe el id. No los usé igual porque en un caso necesito devolver un producto y en el otro necesito generar un error.
 
 **4.5** ¿Por qué `doOnNext` no sirve para transformar el elemento, si aparentemente
 "recibe" el producto?
 
->
+>doOnNext sirve para ejecutar una acción secundaria, como mostrar el producto procesado. Aunque recibe el producto, devuelve el mismo flujo y no reemplaza el elemento. Para transformarlo se utiliza map.
 
 ---
 

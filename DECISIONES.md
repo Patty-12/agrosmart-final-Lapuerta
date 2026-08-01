@@ -198,12 +198,13 @@ falta declarar un `@Bean`?
 **5.4** ¿Por qué la llamada a la IA también necesita `boundedElastic`, si no es una
 consulta a base de datos?
 
->
+>La llamada a la IA hace una petición HTTP que puede tardar y bloquear el hilo. Usé boundedElastic para que esa espera no ocurra en el hilo de Netty.
 
 **5.5** Si tu proveedor devolvió un error durante el examen, pega el mensaje real y la
 respuesta que produjo tu `onErrorResume`.
 
 ```
+El proveedor no devolvió error durante la prueba.
 
 ```
 
@@ -214,17 +215,32 @@ respuesta que produjo tu `onErrorResume`.
 **6.1** Pega la salida real de tus cuatro `curl`.
 
 ```
+C:\Users\Tenshi>curl.exe http://localhost:8192/api/productos
+[{"id":1,"nombre":"CAFÉ ARÁBIGO DE ALTURA","categoria":"Café","precioUsd":18.50,"correosNotificacion":["ventas@agrosmart.ec","comercial@agrosmart.ec"]},{"id":2,"nombre":"CAFÉ TOSTADO ARTESANAL","categoria":"Café","precioUsd":14.75,"correosNotificacion":["pedidos@agrosmart.ec"]},{"id":3,"nombre":"CAFÉ ESPECIAL DE ORIGEN","categoria":"Café","precioUsd":22.90,"correosNotificacion":["exportaciones@agrosmart.ec"]}]
+
+C:\Users\Tenshi>curl.exe http://localhost:8192/api/productos/1
+{"id":1,"nombre":"Café arábigo de altura","categoria":"Café","precioUsd":18.50,"correosNotificacion":["ventas@agrosmart.ec","comercial@agrosmart.ec"]}
+
+C:\Users\Tenshi>curl.exe -i http://localhost:8192/api/productos/9999
+HTTP/1.1 404 Not Found
+Content-Type: application/json
+Content-Length: 127
+
+{"timestamp":"2026-08-01T00:46:30.248Z","path":"/api/productos/9999","status":404,"error":"Not Found","requestId":"398b5fda-3"}
+
+C:\Users\Tenshi>curl.exe "http://localhost:8192/api/agrosmart/publicidad?producto=Caf%C3%A9%20ar%C3%A1bigo%20de%20altura&audiencia=cafeter%C3%ADas%20de%20especialidad"
+"Descubre el sabor único del Café Arábigo de altura: una experiencia gourmet para tu cafetería."
 
 ```
 
 **6.2** ¿Cómo lograste que el id inexistente responda **404** y no 500?
 
->
+>En ProductoNoEncontradoException agregué @ResponseStatus(HttpStatus.NOT_FOUND). Cuando buscarPorId() utiliza switchIfEmpty, se genera esa excepción y Spring la convierte en una respuesta 404.
 
 **6.3** ¿Qué pasaría si tu controlador devolviera `List<Producto>` en lugar de
 `Flux<Producto>`? ¿Seguiría compilando? ¿Seguiría siendo no bloqueante?
 
->
+>Podría compilar si cambiara el servicio, pero tendría que esperar a tener toda la lista antes de responder. Ya no mantendría el flujo reactivo y podría terminar bloqueando la petición. Por eso mi controlador devuelve Flux<Producto>.
 
 ---
 

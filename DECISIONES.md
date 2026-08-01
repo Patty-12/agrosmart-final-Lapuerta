@@ -172,18 +172,28 @@ qué no son intercambiables en esos dos lugares?
 **5.1** Pega tu interfaz `AgroSmartAIService` completa.
 
 ```java
+@AiService
+public interface AgroSmartAIService {
 
+    @UserMessage("""
+            Redacta una frase publicitaria de máximo 100 caracteres para vender \
+            {{producto}} dirigido a {{audiencia}}.""")
+    String generarPublicidad(
+            @V("producto") String producto,
+            @V("audiencia") String audiencia
+    );
+}
 ```
 
 **5.2** ¿Qué hace `@V("producto")` y qué pasaría si lo quitaras dejando solo el
 parámetro?
 
->
+>@V("producto") relaciona el parámetro Java con la variable {{producto}} del prompt. Si lo quitara, LangChain4j podría no saber qué valor debe colocar en esa variable.
 
 **5.3** ¿En qué archivo y con qué líneas configuraste el modelo? ¿Por qué **no** hizo
 falta declarar un `@Bean`?
 
->
+>Configuré el modelo en application-prod.properties con las propiedades langchain4j.open-ai.chat-model.api-key, model-name y timeout. No declaré un @Bean porque el starter de LangChain4j crea y configura automáticamente el modelo usando esas propiedades.
 
 **5.4** ¿Por qué la llamada a la IA también necesita `boundedElastic`, si no es una
 consulta a base de datos?
